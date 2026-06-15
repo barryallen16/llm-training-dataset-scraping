@@ -1,6 +1,12 @@
 import json
+from pathlib import Path
 
-with open("./tamil2lyrics_allrawlyrics.jsonl", "r", encoding="utf-8") as in_file:
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+JSONL_DIR = PROJECT_ROOT / "jsonl_files"
+JSONL_FILE_PATH = JSONL_DIR / "tamil2lyrics_allrawlyrics.jsonl"
+
+with open(JSONL_FILE_PATH, "r", encoding="utf-8") as in_file:
     for line in in_file:
         data = json.loads(line)
         rawLyricsList = data["rawLyrics"]
@@ -28,15 +34,10 @@ with open("./tamil2lyrics_allrawlyrics.jsonl", "r", encoding="utf-8") as in_file
                         rawEnglishLyrics = rawEnglishLyrics[
                             index_ + 1 :
                         ]  # one index skip is enough
+                    cleanEnglishLyrics = "".join(rawEnglishLyrics).strip()
 
-                    cleanEnglishLyrics = "".join(rawEnglishLyrics)
-
-                elif "tamil" in rawLyrics:
-                    rawTamilLyrics = rawLyrics["tamil"]
-        if cleanEnglishLyrics:
-            print("-" * 5, "English Lyrics", "-" * 5)
-            print(cleanEnglishLyrics)
-        if cleanTamilLyrics:
-            print("-" * 5, "Tamil Lyrics", "-" * 5)
-            print(cleanTamilLyrics)
+                    if cleanEnglishLyrics:
+                        jsonl = {"text" : cleanEnglishLyrics }
+                        with open(SCRIPT_DIR/'test.txt', 'w', encoding='utf-8') as out_file:
+                            out_file.write(json.dumps(jsonl, ensure_ascii=False) + "\n")
         break
